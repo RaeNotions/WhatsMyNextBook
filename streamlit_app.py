@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import streamlit as st
 
@@ -7,7 +8,8 @@ st.set_page_config(page_title="What's My Next Book?", page_icon="📖", layout="
 st.title("📖 What's My Next Book?")
 st.write("Click genre tags below to narrow down your choices and draw a random recommendation!")
 
-EXCEL_FILE = "books.xlsx"
+# Use absolute path relative to this script
+EXCEL_FILE = os.path.join(os.path.dirname(__file__), "books.xlsx")
 
 @st.cache_data
 def load_data():
