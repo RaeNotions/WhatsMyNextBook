@@ -9,11 +9,16 @@ st.title("📖 What's My Next Book?")
 st.write("Click genre tags below to narrow down your choices and draw a random recommendation!")
 
 # Use absolute path relative to this script
-EXCEL_FILE = os.path.join(os.path.dirname(__file__), "books.xlsx")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+EXCEL_FILE = os.path.join(BASE_DIR, "books.xlsx")
+
 
 @st.cache_data
 def load_data():
-    return pd.read_excel(EXCEL_FILE, engine="openpyxl").fillna('')
+    if not os.path.exists(EXCEL_FILE):
+        raise FileNotFoundError(f"Could not find '{EXCEL_FILE}'")
+    return pd.read_excel(EXCEL_FILE, engine="openpyxl").fillna("")
+
 
 try:
     df = load_data()
