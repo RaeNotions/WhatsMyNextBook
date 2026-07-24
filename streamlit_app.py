@@ -1,3 +1,12 @@
+import subprocess
+import sys
+
+# Auto-install openpyxl if Streamlit Cloud missed it
+try:
+    import openpyxl
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "openpyxl"])
+
 import pandas as pd
 import streamlit as st
 
