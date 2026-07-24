@@ -11,13 +11,16 @@ st.write("Click genre tags below to narrow down your choices and draw a random r
 # Use absolute path relative to this script
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EXCEL_FILE = os.path.join(BASE_DIR, "books.xlsx")
+CSV_FILE = os.path.join(BASE_DIR, "books.csv")
 
 
 @st.cache_data
 def load_data():
-    if not os.path.exists(EXCEL_FILE):
-        raise FileNotFoundError(f"Could not find '{EXCEL_FILE}'")
-    return pd.read_excel(EXCEL_FILE, engine="openpyxl").fillna("")
+    if os.path.exists(CSV_FILE):
+        return pd.read_csv(CSV_FILE).fillna("")
+    if os.path.exists(EXCEL_FILE):
+        return pd.read_excel(EXCEL_FILE, engine="openpyxl").fillna("")
+    raise FileNotFoundError("Could not find 'books.csv' or 'books.xlsx'")
 
 
 try:
