@@ -1,12 +1,3 @@
-import subprocess
-import sys
-
-# Auto-install openpyxl if Streamlit Cloud missed it
-try:
-    import openpyxl
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "openpyxl"])
-
 import pandas as pd
 import streamlit as st
 
@@ -37,31 +28,24 @@ try:
     st.markdown("### 🏷️ Box 1: Select Genre Tags")
     st.caption("Books must contain **ALL** selected tags:")
 
-    if hasattr(st, "pills"):
-        selected_tags = st.pills(
-            label="Selected Genres",
-            options=unique_tags,
-            selection_mode="multi",
-            default=[unique_tags[0]] if unique_tags else []
-        )
-    else:
-        selected_tags = st.multiselect(
-            label="Selected Genres",
-            options=unique_tags,
-            default=[unique_tags[0]] if unique_tags else []
-        )
+    # Multi-select for genre filtering
+    selected_tags = st.multiselect(
+        label="Selected Genres",
+        options=unique_tags,
+        default=[unique_tags[0]] if unique_tags else []
+    )
 
     if selected_tags:
         st.write("Filtering for books with **ALL** of these tags:", " + ".join([f"`{tag}`" for tag in selected_tags]))
     else:
-        st.info("💡 Please click at least one tag above to start filtering.")
+        st.info("💡 Please select at least one tag above to start filtering.")
 
     # Draw Button
     if st.button("🎲 Pick My Next Book!", type="primary", use_container_width=True):
         if not selected_tags:
             st.warning("Please select at least one genre tag in Box 1!")
         else:
-            # Strict AND filtering
+            # Strict AND filtering: book must contain EVERY selected tag
             mask = pd.Series([True] * len(df))
             for tag in selected_tags:
                 mask = mask & df['Genre'].astype(str).str.contains(rf"\b{tag}\b", case=False, regex=True)
@@ -77,6 +61,7 @@ try:
             else:
                 winner = matches.sample(n=1).iloc[0]
 
+                # Render result card
                 with st.container(border=True):
                     st.subheader(f"📖 {winner['Title']}")
                     st.caption(f"**Author:** {winner['Author']} | **Genre:** {winner['Genre']}")
@@ -84,4 +69,4 @@ try:
                     st.write(winner['Summary'])
 
 except FileNotFoundError:
-    st.error(f"Could not find '{EXCEL_FILE}'. Please ensure 'books.xlsx' is uploaded to your GitHub repository root.")
+    st.error(f"Could not find '{EXCEL_FILE}'. Please ensure 'books.xlsx' is committed to your repository root.")
